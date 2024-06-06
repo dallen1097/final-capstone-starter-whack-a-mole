@@ -265,9 +265,10 @@ function stopGame(){
 *
 */
 function startGame() {
-  setDuration(10); // Set the game duration
+  setDuration(10);
   startTimer(); // Start the timer
-  showUp(); // Start showing the moles
+  clearScore(); // Clears the score
+  showUp(); 
   return "game started";
 }
 
