@@ -47,7 +47,7 @@ function setDelay(difficulty) {
     case "normal":
       return 1000;
     case "hard":
-      return Math.floor(Math.random() * (1200 - 600 + 1)) + 600;
+      return randomInteger(600, 1200);
     default:
       throw new Error("Invalid difficulty level");
   }  
@@ -68,16 +68,15 @@ function setDelay(difficulty) {
  * chooseHole(holes) //> returns one of the 9 holes that you defined
  */
 function chooseHole(holes) {
-  // TODO: Write your code here.
-  while (true) {
-    const index = Math.floor(Math.random() * holes.length);
-    const hole = holes[index];
+  let index = Math.floor(Math.random() * holes.length);
+  let hole = holes[index];
 
-    if (hole !== lastHole) {
-      lastHole = hole;
-      return hole;
-    }
+  if (hole === lastHole) {
+    return chooseHole(holes);
   }
+
+  lastHole = hole;
+  return hole;
 }
 
 /**
@@ -103,10 +102,10 @@ function chooseHole(holes) {
 function gameOver() {
   // TODO: Write your code here
   if (time > 0) {
-    const timeoutId = showUp();
+    timeoutId = showUp();
     return timeoutId;
   } else {
-    const gameStopped = stopGame();
+    gameStopped = stopGame();
     return gameStopped;
   }
 }
@@ -121,7 +120,7 @@ function gameOver() {
 *
 */
 function showUp() {
-  let delay = setDelay(difficulty);
+  const delay = setDelay(difficulty);
   const hole = chooseHole(holes);
   return showAndHide(hole, delay);
 }
@@ -135,13 +134,11 @@ function showUp() {
 *
 */
 function showAndHide(hole, delay) {
-  toggleVisibility(hole, true);
-
+  toggleVisibility(hole);
   const timeoutID = setTimeout(() => {
-    toggleVisibility(hole, false);
+    toggleVisibility(hole);
     gameOver();
   }, delay);
-
   return timeoutID;
 }
 
@@ -151,12 +148,8 @@ function showAndHide(hole, delay) {
 * a given hole. It returns the hole.
 *
 */
-function toggleVisibility(hole, isVisible) {
-  if (isVisible) {
-    hole.querySelector('.mole').classList.add('show');
-  } else {
-    hole.querySelector('.mole').classList.remove('show');
-  }
+function toggleVisibility(hole) {
+  hole.classList.toggle('show');
   return hole;
 }
 
@@ -196,10 +189,10 @@ function clearScore() {
 *
 */
 function updateTimer() {
-  if (time > 0){
+  if (time > 0) {
     time -= 1;
     timerDisplay.textContent = time;
-  }
+  } 
   return time;
 }
 
@@ -225,7 +218,7 @@ function startTimer() {
 */
 function whack(event) {
   // TODO: Write your code here.
-  // call updateScore()
+  updateScore()
   return points;
 }
 
@@ -234,9 +227,10 @@ function whack(event) {
 * Adds the 'click' event listeners to the moles. See the instructions
 * for an example on how to set event listeners using a for loop.
 */
-function setEventListeners(){
-  // TODO: Write your code here
-
+function setEventListeners() {
+  moles.forEach(mole => {
+    mole.addEventListener('click', whack);
+  });
   return moles;
 }
 
@@ -248,6 +242,7 @@ function setEventListeners(){
 */
 function setDuration(duration) {
   time = duration;
+  timerDisplay.textContent = time;
   return time;
 }
 
@@ -269,14 +264,15 @@ function stopGame(){
 * is clicked.
 *
 */
-function startGame(){
-  //setDuration(10);
-  //showUp();
+function startGame() {
+  setDuration(10); // Set the game duration
+  startTimer(); // Start the timer
+  showUp(); // Start showing the moles
   return "game started";
 }
 
 startButton.addEventListener("click", startGame);
-
+setEventListeners();
 
 // Please do not modify the code below.
 // Used for testing purposes.
